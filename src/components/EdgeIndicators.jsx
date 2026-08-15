@@ -45,18 +45,24 @@ export default function EdgeIndicators({
             className="absolute pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
             style={{ left: edgeX, top: edgeY }}
           >
-            <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#111111] hover:border-black hover:scale-105 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center gap-2">
+            <div 
+              className="bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-lg border border-[#111111] hover:border-black hover:scale-105 transition-all shadow-[0_6px_25px_rgba(0,0,0,0.12)] flex items-center gap-2.5"
+              style={{ borderLeft: `3.5px solid ${proj.color || '#111111'}` }}
+            >
               <Navigation 
-                className="w-3.5 h-3.5 text-black transition-transform group-hover:scale-110" 
-                style={{ transform: `rotate(${angle * (180 / Math.PI) + 90}deg)` }}
+                className="w-3.5 h-3.5 transition-transform group-hover:scale-110" 
+                style={{ 
+                  color: proj.color || '#111111',
+                  transform: `rotate(${angle * (180 / Math.PI) + 90}deg)` 
+                }}
               />
               <div>
-                <div className="font-heading font-bold text-xs text-black truncate max-w-[140px]">
+                <div className="font-heading font-bold text-xs text-black truncate max-w-[150px]">
                   {proj.title}
                 </div>
                 <div className="font-mono text-[9px] text-zinc-500 flex items-center gap-1">
                   <span className="font-bold text-black">{dist}u</span>
-                  <span>// JUMP TO NODE</span>
+                  <span>// CLICK TO PAN</span>
                 </div>
               </div>
             </div>

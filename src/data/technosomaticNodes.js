@@ -1,117 +1,82 @@
-// Technosomatic Network Graph - 7 Live Terminal Nodes Manifest
+// Technosomatic Network Graph - Terminal Nodes Manifest
 
 export const technosomaticNodes = [
   {
-    id: 'node-01',
-    index: '01',
-    indexTag: '01 / SPATIAL_INFRASTRUCTURE',
-    title: 'Technosomatic Architecture',
-    category: 'Spatial Infrastructure & Systems',
-    status: 'LIVE PORTAL',
-    coords: { x: 520, y: 0 },
+    id: "technosomatic-architecture",
+    title: "Technosomatic Architecture",
+    color: "#059669", // Emerald
+    url: "https://technosomaticarchitecture.vercel.app/",
     angle: 0,
-    distance: 520,
-    summary: 'The primary spatial architecture portal examining somatic computing environments, physical-digital integration, and embodied interfaces.',
-    tags: ['Architecture', 'Spatial Systems', 'Somatic HCI'],
-    url: 'https://technosomaticarchitecture.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Spatial Architecture', latency: '<12ms' }
+    distance: 500,
+    coords: { x: 500, y: 0 },
+    category: "Spatial Infrastructure & Systems",
+    summary: "The primary spatial architecture portal examining somatic computing environments, physical-digital integration, and embodied interfaces."
   },
   {
-    id: 'node-02',
-    index: '02',
-    indexTag: '02 / GENERATIVE_SPACE',
-    title: 'Technosomatic — Rendered',
-    category: 'Visualizations & Generative Space',
-    status: 'LIVE PORTAL',
-    coords: { x: 330, y: 410 },
+    id: "rendered",
+    title: "Technosomatic — Rendered",
+    color: "#0284C7", // Sky Blue
+    url: "https://technosomatic-rendered.vercel.app/",
     angle: 51,
-    distance: 526,
-    summary: 'High-resolution 3D renders, generative spatial geometry, and visual manifestations of embodied computing nodes.',
-    tags: ['3D Rendering', 'Generative Spatial', 'WebGL'],
-    url: 'https://technosomatic-rendered.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Generative Render', latency: '<18ms' }
+    distance: 520,
+    coords: { x: 330, y: 400 },
+    category: "Visualizations & Generative Space",
+    summary: "High-resolution 3D renders, generative spatial geometry, and visual manifestations of embodied computing nodes."
   },
   {
-    id: 'node-03',
-    index: '03',
-    indexTag: '03 / BIO_SUBSTRATE',
-    title: 'Technosomatic — NUDE',
-    category: 'Raw Biological Substrate',
-    status: 'LIVE PORTAL',
-    coords: { x: -120, y: 510 },
+    id: "nude",
+    title: "Technosomatic — NUDE",
+    color: "#E11D48", // Crimson / Rose
+    url: "https://technosomatic-nude.vercel.app/",
     angle: 103,
-    distance: 524,
-    summary: 'Unfiltered somatic mapping and bio-cybernetic frameworks exploring the unadorned biological interface.',
-    tags: ['Bio-Substrate', 'Homunculus', 'Raw Somatics'],
-    url: 'https://technosomatic-nude.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Bio-Substrate', latency: '<15ms' }
+    distance: 520,
+    coords: { x: -120, y: 500 },
+    category: "Raw Biological Substrate",
+    summary: "Unfiltered somatic mapping and bio-cybernetic frameworks exploring the unadorned biological interface."
   },
   {
-    id: 'node-04',
-    index: '04',
-    indexTag: '04 / SPATIAL_TELEMETRY',
-    title: 'Descending Data / Holoscene',
-    category: 'Data Flow & Spatial Telemetry',
-    status: 'LIVE PORTAL',
-    coords: { x: -480, y: 220 },
+    id: "holoscene",
+    title: "Holoscene",
+    color: "#4F46E5", // Indigo
+    url: "https://technosomatic-holoscene.vercel.app/",
     angle: 155,
-    distance: 528,
-    summary: 'Holoscene telemetry pipelines and descending data streams tracing real-time environmental and human bio-metrics.',
-    tags: ['Telemetry', 'Holoscene', 'Data Streams'],
-    url: 'https://technosomatic-holoscene.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Telemetry Engine', latency: '<8ms' }
+    distance: 520,
+    coords: { x: -470, y: 220 },
+    category: "Data Flow & Spatial Telemetry",
+    summary: "Holoscene telemetry pipelines and descending data streams tracing real-time environmental and human bio-metrics."
   },
   {
-    id: 'node-05',
-    index: '05',
-    indexTag: '05 / PHYSICAL_DIGITAL',
-    title: 'Technosomatic Real',
-    category: 'Physical-Digital Convergence',
-    status: 'LIVE PORTAL',
-    coords: { x: -480, y: -220 },
+    id: "real",
+    title: "Technosomatic Real",
+    color: "#D97706", // Amber
+    url: "https://technosomaticreal.vercel.app/",
     angle: 205,
-    distance: 528,
-    summary: 'Real-world hardware integrations, physical installations, and tactile bio-feedback interface deployments.',
-    tags: ['Physical Computing', 'Tactile HCI', 'Hardware'],
-    url: 'https://technosomaticreal.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Physical Interface', latency: '<20ms' }
+    distance: 520,
+    coords: { x: -470, y: -220 },
+    category: "Physical-Digital Convergence",
+    summary: "Real-world hardware integrations, physical installations, and tactile bio-feedback interface deployments."
   },
   {
-    id: 'node-06',
-    index: '06',
-    indexTag: '06 / CYBERNETIC_LOOPS',
-    title: 'The Loop of Being',
-    category: 'Philosophical & Cybernetic Loops',
-    status: 'LIVE PORTAL',
-    coords: { x: -120, y: -510 },
+    id: "loop-of-being",
+    title: "The Loop of Being",
+    color: "#7C3AED", // Purple / Violet
+    url: "https://theloopofbeing.vercel.app/",
     angle: 257,
-    distance: 524,
-    summary: 'A cybernetic exploration of feedback loops, consciousness, self-referential systems, and existential computing.',
-    tags: ['Feedback Loops', 'Cybernetics', 'Consciousness'],
-    url: 'https://theloopofbeing.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Cybernetic Loop', latency: '<10ms' }
+    distance: 520,
+    coords: { x: -120, y: -500 },
+    category: "Philosophical & Cybernetic Loops",
+    summary: "A cybernetic exploration of feedback loops, consciousness, self-referential systems, and existential computing."
   },
   {
-    id: 'node-07',
-    index: '07',
-    indexTag: '07 / ESSAYS_RESEARCH',
-    title: 'Technosomatic Writings',
-    category: 'Essays & Research Papers',
-    status: 'LIVE PORTAL',
-    coords: { x: 330, y: -410 },
+    id: "writings",
+    title: "Technosomatic Writings",
+    color: "#0D9488", // Teal
+    url: "https://technosomatic-writings.vercel.app/",
     angle: 309,
-    distance: 526,
-    summary: 'Comprehensive repository of essays, research papers, and technical publications including Body as Root Node and The Invisible Board.',
-    tags: ['Essays', 'Research', 'Publications'],
-    url: 'https://technosomatic-writings.vercel.app/',
-    accentColor: '#111111',
-    stats: { status: 'ACTIVE', type: 'Research Vault', latency: '<5ms' }
+    distance: 520,
+    coords: { x: 330, y: -400 },
+    category: "Essays & Research Papers",
+    summary: "Comprehensive repository of essays, research papers, and technical publications including Body as Root Node and The Invisible Board."
   }
 ];
 

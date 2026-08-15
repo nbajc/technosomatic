@@ -62,14 +62,16 @@ export default function SpatialMinimap({
           style={{ left: mapX(0), top: mapY(0) }}
         ></div>
 
-        {/* Project Node Blips */}
+        {/* Color-Coded Project Node Blips */}
         {projects.map((proj) => (
           <div
             key={proj.id}
-            className="absolute w-2 h-2 rounded-full bg-zinc-900 border border-white transform -translate-x-1/2 -translate-y-1/2 transition-transform group-hover:scale-125"
+            className="absolute w-2.5 h-2.5 rounded-full border border-white transform -translate-x-1/2 -translate-y-1/2 transition-transform group-hover:scale-125"
             style={{ 
               left: mapX(proj.coords.x), 
-              top: mapY(proj.coords.y)
+              top: mapY(proj.coords.y),
+              backgroundColor: proj.color || '#111111',
+              boxShadow: `0 0 6px ${proj.color || '#111111'}60`
             }}
             title={proj.title}
           ></div>

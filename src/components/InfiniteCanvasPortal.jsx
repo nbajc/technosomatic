@@ -6,7 +6,7 @@ import SpatialMinimap from './SpatialMinimap';
 import EdgeIndicators from './EdgeIndicators';
 import NodeModalOverlay from './NodeModalOverlay';
 import { bioSynthesizer } from '../audio/bioSynthesizer';
-import { Maximize2, ZoomIn, ZoomOut, Volume2, VolumeX, Sparkles, Navigation, Layers } from 'lucide-react';
+import { Maximize2, ZoomIn, ZoomOut, Volume2, VolumeX } from 'lucide-react';
 
 export default function InfiniteCanvasPortal() {
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -44,7 +44,7 @@ export default function InfiniteCanvasPortal() {
     return () => cancelAnimationFrame(animFrameId.current);
   }, []);
 
-  // Mouse Drag Handlers - exclude all cards and interactive controls from canvas drag
+  // Mouse Drag Handlers
   const handleMouseDown = (e) => {
     if (
       e.target.closest('button') || 
@@ -127,7 +127,7 @@ export default function InfiniteCanvasPortal() {
       ctx.translate(halfW + pan.x * zoom, halfH + pan.y * zoom);
       ctx.scale(zoom, zoom);
 
-      // 2. Subtle Coordinate Vector Grid (Light grey)
+      // 1. Subtle Precision Coordinate Grid (Light grey)
       const gridSize = 100;
       const startX = Math.floor((-halfW / zoom - pan.x) / gridSize) * gridSize - gridSize;
       const endX = Math.floor((halfW / zoom - pan.x) / gridSize) * gridSize + gridSize;
@@ -152,7 +152,7 @@ export default function InfiniteCanvasPortal() {
       }
 
       // Subtle Major Axis Lines
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.07)';
       ctx.lineWidth = 1.25;
       ctx.beginPath();
       ctx.moveTo(startX, 0);
@@ -161,7 +161,7 @@ export default function InfiniteCanvasPortal() {
       ctx.lineTo(0, endY);
       ctx.stroke();
 
-      // 3. Radial Extension Lines Connecting Origin (0,0) to Terminal Nodes
+      // 2. Color-Coded Radial Extension Lines to Terminal Button Endpoints
       pulseStep += 0.015;
 
       technosomaticNodes.forEach((node) => {
@@ -169,13 +169,14 @@ export default function InfiniteCanvasPortal() {
         const targetX = node.coords.x;
         const targetY = node.coords.y;
 
+        // Draw connecting vector ray
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(targetX, targetY);
         
         if (isHovered) {
-          ctx.strokeStyle = '#111111';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = node.color;
+          ctx.lineWidth = 2.2;
           ctx.setLineDash([8, 4]);
         } else {
           ctx.strokeStyle = 'rgba(17, 17, 17, 0.22)';
@@ -187,25 +188,25 @@ export default function InfiniteCanvasPortal() {
 
         // Terminal Docking Ring at Node Coordinates
         ctx.beginPath();
-        ctx.arc(targetX, targetY, isHovered ? 8 : 5, 0, Math.PI * 2);
-        ctx.strokeStyle = isHovered ? '#111111' : 'rgba(17, 17, 17, 0.4)';
+        ctx.arc(targetX, targetY, isHovered ? 8 : 4.5, 0, Math.PI * 2);
+        ctx.strokeStyle = isHovered ? node.color : 'rgba(17, 17, 17, 0.4)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Traveling Energy Pulse Dot
+        // Traveling Energy Pulse Dot in Node's Accent Color
         const phase = (pulseStep * (isHovered ? 2.5 : 1) + Math.abs(targetX) * 0.005) % 1;
         const pulseX = targetX * phase;
         const pulseY = targetY * phase;
 
         ctx.beginPath();
-        ctx.arc(pulseX, pulseY, isHovered ? 4.5 : 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#111111';
+        ctx.arc(pulseX, pulseY, isHovered ? 5 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = node.color;
         ctx.fill();
 
         if (isHovered) {
           ctx.beginPath();
-          ctx.arc(pulseX, pulseY, 8, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+          ctx.arc(pulseX, pulseY, 10, 0, Math.PI * 2);
+          ctx.fillStyle = `${node.color}30`;
           ctx.fill();
         }
       });
@@ -261,7 +262,7 @@ export default function InfiniteCanvasPortal() {
         {/* Origin (0,0) Central Architectural Hub */}
         <CentralHubNode onExploreFirst={() => jumpTo(-technosomaticNodes[0].coords.x, -technosomaticNodes[0].coords.y)} />
 
-        {/* Orbiting Terminal Nodes */}
+        {/* Interactive Color-Coded Rectangular Node Endpoint Buttons */}
         {technosomaticNodes.map((node) => (
           <ProjectNodeCard
             key={node.id}
@@ -309,7 +310,7 @@ export default function InfiniteCanvasPortal() {
               <option value="">Jump & Open Modal...</option>
               <option value="origin">Origin [0, 0]</option>
               {technosomaticNodes.map(p => (
-                <option key={p.id} value={p.id}>{p.indexTag || p.title}</option>
+                <option key={p.id} value={p.id}>{p.title}</option>
               ))}
             </select>
           </div>
