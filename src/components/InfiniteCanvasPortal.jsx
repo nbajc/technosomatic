@@ -9,14 +9,12 @@ import { bioSynthesizer } from '../audio/bioSynthesizer';
 import { Maximize2, ZoomIn, ZoomOut, Volume2, VolumeX, Sparkles, Navigation, Layers } from 'lucide-react';
 
 export default function InfiniteCanvasPortal() {
-  // Pan state (x, y) relative to world origin (0,0)
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(0.85); // 0.6x to 1.2x
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
   const [audioActive, setAudioActive] = useState(false);
 
-  // Dragging & Kinetic Inertia refs
   const isDragging = useRef(false);
   const startMouse = useRef({ x: 0, y: 0 });
   const startPan = useRef({ x: 0, y: 0 });
@@ -37,7 +35,7 @@ export default function InfiniteCanvasPortal() {
           x: prev.x + velocity.current.x,
           y: prev.y + velocity.current.y
         }));
-        velocity.current.x *= 0.92; // Damping
+        velocity.current.x *= 0.92;
         velocity.current.y *= 0.92;
       }
       animFrameId.current = requestAnimationFrame(updateInertia);
@@ -46,9 +44,15 @@ export default function InfiniteCanvasPortal() {
     return () => cancelAnimationFrame(animFrameId.current);
   }, []);
 
-  // Mouse Drag Handlers
+  // Mouse Drag Handlers - exclude all cards and interactive controls from canvas drag
   const handleMouseDown = (e) => {
-    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select') || e.target.closest('a')) return;
+    if (
+      e.target.closest('button') || 
+      e.target.closest('input') || 
+      e.target.closest('select') || 
+      e.target.closest('a') || 
+      e.target.closest('[data-node-card]')
+    ) return;
 
     isDragging.current = true;
     startMouse.current = { x: e.clientX, y: e.clientY };
@@ -113,7 +117,6 @@ export default function InfiniteCanvasPortal() {
     window.addEventListener('resize', resize);
 
     const renderCanvas = () => {
-      // 1. Clear to pure stark white
       ctx.fillStyle = '#FAFAFA';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -124,7 +127,7 @@ export default function InfiniteCanvasPortal() {
       ctx.translate(halfW + pan.x * zoom, halfH + pan.y * zoom);
       ctx.scale(zoom, zoom);
 
-      // 2. Subtle Coordinate Vector Grid (Light grey #ECECEE)
+      // 2. Subtle Coordinate Vector Grid (Light grey)
       const gridSize = 100;
       const startX = Math.floor((-halfW / zoom - pan.x) / gridSize) * gridSize - gridSize;
       const endX = Math.floor((halfW / zoom - pan.x) / gridSize) * gridSize + gridSize;
@@ -166,7 +169,6 @@ export default function InfiniteCanvasPortal() {
         const targetX = node.coords.x;
         const targetY = node.coords.y;
 
-        // Extension Ray Vector
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(targetX, targetY);
@@ -190,11 +192,8 @@ export default function InfiniteCanvasPortal() {
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Traveling Energy Pulse Dot (accelerates when hovered)
-        const rate = isHovered ? 0.04 : 0.015;
+        // Traveling Energy Pulse Dot
         const phase = (pulseStep * (isHovered ? 2.5 : 1) + Math.abs(targetX) * 0.005) % 1;
-        
-        // Progress travels from 0.0 (origin) outward to 1.0 (docking coordinate)
         const pulseX = targetX * phase;
         const pulseY = targetY * phase;
 
@@ -203,7 +202,6 @@ export default function InfiniteCanvasPortal() {
         ctx.fillStyle = '#111111';
         ctx.fill();
 
-        // Trail glow
         if (isHovered) {
           ctx.beginPath();
           ctx.arc(pulseX, pulseY, 8, 0, Math.PI * 2);
@@ -295,15 +293,20 @@ export default function InfiniteCanvasPortal() {
         <div className="flex items-center gap-2 pointer-events-auto">
           {/* Quick Node Selector Dropdown */}
           <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#111111] flex items-center gap-2 text-xs font-mono shadow-[0_8px_25px_rgba(0,0,0,0.06)]">
-            <span className="text-zinc-500 font-semibold hidden sm:inline text-[11px]">JUMP:</span>
+            <span className="text-zinc-500 font-semibold hidden sm:inline text-[11px]">PORTAL:</span>
             <select
               onChange={(e) => {
                 const target = technosomaticNodes.find(p => p.id === e.target.value);
-                if (target) jumpTo(-target.coords.x, -target.coords.y);
-                else if (e.target.value === 'origin') recenter();
+                if (target) {
+                  jumpTo(-target.coords.x, -target.coords.y);
+                  setSelectedNode(target);
+                } else if (e.target.value === 'origin') {
+                  recenter();
+                }
               }}
               className="bg-white text-black font-semibold border border-zinc-300 rounded px-2 py-1 text-xs cursor-pointer outline-none hover:border-black"
             >
+              <option value="">Jump & Open Modal...</option>
               <option value="origin">Origin [0, 0]</option>
               {technosomaticNodes.map(p => (
                 <option key={p.id} value={p.id}>{p.indexTag || p.title}</option>
