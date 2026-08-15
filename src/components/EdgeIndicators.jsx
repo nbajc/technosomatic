@@ -10,16 +10,14 @@ export default function EdgeIndicators({
 }) {
   const halfW = window.innerWidth / 2;
   const halfH = window.innerHeight / 2;
-  const padding = 60; // Distance from viewport edge
+  const padding = 65;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-30">
       {projects.map((proj) => {
-        // Calculate screen coordinates of the node relative to viewport center
         const screenX = halfW + (proj.coords.x + pan.x) * zoom;
         const screenY = halfH + (proj.coords.y + pan.y) * zoom;
 
-        // Check if node is off-screen
         const isOffScreen = 
           screenX < padding || 
           screenX > window.innerWidth - padding || 
@@ -28,17 +26,14 @@ export default function EdgeIndicators({
 
         if (!isOffScreen) return null;
 
-        // Calculate angle from center of viewport to node
         const dx = screenX - halfW;
         const dy = screenY - halfH;
         const angle = Math.atan2(dy, dx);
 
-        // Clamp to screen border bounding box
         let edgeX = halfW + Math.cos(angle) * (halfW - padding);
         let edgeY = halfH + Math.sin(angle) * (halfH - padding);
 
-        // Calculate distance in world units
-        const dist = Math.round(Math.sqrt(proj.coords.x * proj.coords.x + proj.coords.y * proj.coords.y));
+        const dist = Math.round(Math.hypot(proj.coords.x, proj.coords.y));
 
         return (
           <div
@@ -50,18 +45,18 @@ export default function EdgeIndicators({
             className="absolute pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
             style={{ left: edgeX, top: edgeY }}
           >
-            <div className="glass-panel px-3 py-1.5 flex items-center gap-2 border-emerald-400/40 hover:border-emerald-400 hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,245,160,0.2)]">
+            <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#111111] hover:border-black hover:scale-105 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center gap-2">
               <Navigation 
-                className="w-3.5 h-3.5 text-emerald-400 transition-transform group-hover:scale-110" 
+                className="w-3.5 h-3.5 text-black transition-transform group-hover:scale-110" 
                 style={{ transform: `rotate(${angle * (180 / Math.PI) + 90}deg)` }}
               />
               <div>
-                <div className="font-heading font-bold text-xs text-white group-hover:text-emerald-400 transition-colors">
+                <div className="font-heading font-bold text-xs text-black truncate max-w-[140px]">
                   {proj.title}
                 </div>
-                <div className="font-mono text-[9px] text-slate-400 flex items-center gap-1">
-                  <span className="text-emerald-400 font-bold">{dist}u</span>
-                  <span>// CLICK TO PAN</span>
+                <div className="font-mono text-[9px] text-zinc-500 flex items-center gap-1">
+                  <span className="font-bold text-black">{dist}u</span>
+                  <span>// JUMP TO NODE</span>
                 </div>
               </div>
             </div>

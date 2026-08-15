@@ -1,85 +1,93 @@
 import React, { useState } from 'react';
-import { ExternalLink, Sparkles, Activity, Layers } from 'lucide-react';
+import { ExternalLink, Activity, ArrowUpRight } from 'lucide-react';
+import NodeThumbnail from './NodeThumbnail';
 import { bioSynthesizer } from '../audio/bioSynthesizer';
 
-export default function ProjectNodeCard({ project, onSelect }) {
+export default function ProjectNodeCard({ project, onSelect, onHover, onHoverEnd }) {
   const [hovered, setHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setHovered(true);
+    bioSynthesizer.triggerSynapticImpulse();
+    if (onHover) onHover(project.id);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+    if (onHoverEnd) onHoverEnd();
+  };
 
   return (
     <div
       className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-auto cursor-pointer group"
       style={{ left: project.coords.x, top: project.coords.y }}
-      onMouseEnter={() => {
-        setHovered(true);
-        bioSynthesizer.triggerSynapticImpulse();
-      }}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => onSelect(project)}
     >
-      {/* Floating Node Card */}
+      {/* High-Contrast Pure White Minimalist Anchor Card */}
       <div 
-        className={`w-[300px] sm:w-[340px] p-6 rounded-2xl glass-panel transition-all duration-300 ${
+        className={`w-[300px] sm:w-[330px] p-4 rounded-xl bg-white text-zinc-950 border border-[#111111] transition-all duration-300 ease-out ${
           hovered 
-            ? 'scale-105 border-emerald-400 shadow-[0_0_40px_rgba(0,245,160,0.25)] -translate-y-2' 
-            : 'border-white/10 hover:border-white/30'
+            ? 'scale-105 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.18)] -translate-y-2 border-black' 
+            : 'shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-black'
         }`}
-        style={{
-          borderColor: hovered ? project.accentColor : undefined
-        }}
       >
-        {/* Top Metadata Header */}
-        <div className="flex items-center justify-between text-xs font-mono mb-4">
-          <span 
-            className="px-2.5 py-1 rounded-full text-[10px] uppercase font-bold border"
-            style={{ 
-              backgroundColor: `${project.accentColor}15`, 
-              color: project.accentColor,
-              borderColor: `${project.accentColor}40`
-            }}
-          >
-            {project.status}
+        {/* Visual Preview Frame with Fine 1px Solid #111111 Border */}
+        <div className="mb-3.5 rounded-lg overflow-hidden">
+          <NodeThumbnail 
+            nodeId={project.id} 
+            title={project.title} 
+            coords={project.coords} 
+            isHovered={hovered} 
+          />
+        </div>
+
+        {/* Index Tag & Status */}
+        <div className="flex items-center justify-between text-xs font-mono mb-2">
+          <span className="text-[10px] font-bold tracking-widest text-zinc-900 bg-zinc-100 px-2 py-0.5 rounded border border-zinc-300">
+            {project.indexTag || `${project.index} // PORTAL`}
           </span>
 
-          <span className="text-[10px] text-slate-500 font-mono">
+          <span className="text-[10px] text-zinc-500 font-mono font-semibold">
             LOC [{project.coords.x}, {project.coords.y}]
           </span>
         </div>
 
-        {/* Title & Category */}
-        <h3 className="text-xl font-bold font-heading text-white group-hover:text-emerald-400 transition-colors mb-1">
+        {/* Project Title */}
+        <h3 className="text-base sm:text-lg font-bold font-heading text-black group-hover:text-zinc-800 transition-colors mb-1">
           {project.title}
         </h3>
         
-        <div className="text-xs font-mono text-slate-400 mb-3">
+        {/* Category Description */}
+        <div className="text-[11px] font-mono text-zinc-500 mb-2">
           // {project.category}
         </div>
 
         {/* Summary Description */}
-        <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-5 font-body">
+        <p className="text-xs text-zinc-600 leading-relaxed line-clamp-2 mb-3.5 font-body">
           {project.summary}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
+        <div className="flex flex-wrap gap-1.5 mb-3.5">
           {project.tags.map((t, idx) => (
-            <span key={idx} className="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">
+            <span key={idx} className="text-[9px] font-mono text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded border border-zinc-200">
               #{t}
             </span>
           ))}
         </div>
 
         {/* Action Footer */}
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-          <span className="text-slate-500 flex items-center gap-1.5">
-            <Activity className="w-3 h-3 text-emerald-400" />
-            {Object.values(project.stats)[0]}
+        <div className="pt-2.5 border-t border-zinc-200 flex items-center justify-between text-xs font-mono">
+          <span className="text-zinc-500 text-[10px] flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            {project.stats?.type || 'Live Node'}
           </span>
 
-          <span 
-            className="flex items-center gap-1 font-semibold transition-all group-hover:translate-x-1"
-            style={{ color: project.accentColor }}
-          >
-            INSPECT NODE <ExternalLink className="w-3.5 h-3.5" />
+          <span className="flex items-center gap-1 font-bold text-black group-hover:underline text-[11px]">
+            <span>OPEN PORTAL</span>
+            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>
         </div>
 
