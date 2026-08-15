@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { technosomaticNodes } from '../data/technosomaticNodes';
+import { radialNodes } from '../data/technosomaticNodes';
 import CentralHubNode from './CentralHubNode';
 import ProjectNodeCard from './ProjectNodeCard';
 import SpatialMinimap from './SpatialMinimap';
@@ -10,7 +10,7 @@ import { Maximize2, ZoomIn, ZoomOut, Volume2, VolumeX } from 'lucide-react';
 
 export default function InfiniteCanvasPortal() {
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(0.85); // 0.6x to 1.2x
+  const [zoom, setZoom] = useState(0.9);
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
   const [audioActive, setAudioActive] = useState(false);
@@ -101,27 +101,33 @@ export default function InfiniteCanvasPortal() {
     }
   };
 
-  // Canvas Vector Grid & Extension Rays Render Loop
+  // High-DPI Canvas Vector Grid & Staggered Radial Ray Animation Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let frameId;
-    let pulseStep = 0;
+    let animTime = 0;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
     };
     resize();
     window.addEventListener('resize', resize);
 
     const renderCanvas = () => {
-      ctx.fillStyle = '#FAFAFA';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const dpr = window.devicePixelRatio || 1;
+      ctx.save();
+      ctx.scale(dpr, dpr);
 
-      const halfW = canvas.width / 2;
-      const halfH = canvas.height / 2;
+      // Clean Pure White Viewport Clear
+      ctx.fillStyle = '#FAFAFA';
+      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      const halfW = window.innerWidth / 2;
+      const halfH = window.innerHeight / 2;
 
       ctx.save();
       ctx.translate(halfW + pan.x * zoom, halfH + pan.y * zoom);
@@ -161,56 +167,64 @@ export default function InfiniteCanvasPortal() {
       ctx.lineTo(0, endY);
       ctx.stroke();
 
-      // 2. Color-Coded Radial Extension Lines to Terminal Button Endpoints
-      pulseStep += 0.015;
+      // 2. 7-Ray Radial Dashed Lines & Staggered Traveling Dots Under Logo
+      animTime += 0.012;
 
-      technosomaticNodes.forEach((node) => {
+      radialNodes.forEach((node, index) => {
         const isHovered = hoveredNodeRef.current === node.id;
         const targetX = node.coords.x;
         const targetY = node.coords.y;
+        const dotColor = node.dotColor || node.color;
 
-        // Draw connecting vector ray
+        // Dashed Extension Trajectory Line
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(targetX, targetY);
         
         if (isHovered) {
-          ctx.strokeStyle = node.color;
+          ctx.strokeStyle = dotColor;
           ctx.lineWidth = 2.2;
           ctx.setLineDash([8, 4]);
         } else {
-          ctx.strokeStyle = 'rgba(17, 17, 17, 0.22)';
+          ctx.strokeStyle = 'rgba(17, 17, 17, 0.25)';
           ctx.lineWidth = 1.25;
-          ctx.setLineDash([5, 5]);
+          ctx.setLineDash([6, 6]);
         }
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Terminal Docking Ring at Node Coordinates
+        // Outer Terminal Circle at Endpoint
         ctx.beginPath();
         ctx.arc(targetX, targetY, isHovered ? 8 : 4.5, 0, Math.PI * 2);
-        ctx.strokeStyle = isHovered ? node.color : 'rgba(17, 17, 17, 0.4)';
+        ctx.strokeStyle = isHovered ? dotColor : 'rgba(17, 17, 17, 0.4)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Traveling Energy Pulse Dot in Node's Accent Color
-        const phase = (pulseStep * (isHovered ? 2.5 : 1) + Math.abs(targetX) * 0.005) % 1;
+        // Staggered Asynchronous Dot Progression (index offset for natural organic flow)
+        const speed = isHovered ? 0.04 : 0.012;
+        const staggerOffset = (index * 0.1428); // 1/7 offset per ray
+        const phase = (animTime * (isHovered ? 3 : 1) + staggerOffset) % 1;
+
+        // Pulse position travels from center (0,0) outward to (targetX, targetY)
         const pulseX = targetX * phase;
         const pulseY = targetY * phase;
 
+        // Traveling Dot in Harmonized dotColor
         ctx.beginPath();
-        ctx.arc(pulseX, pulseY, isHovered ? 5 : 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = node.color;
+        ctx.arc(pulseX, pulseY, isHovered ? 5.5 : 3.8, 0, Math.PI * 2);
+        ctx.fillStyle = dotColor;
         ctx.fill();
 
+        // Enhanced Trail / Glow when Hovered
         if (isHovered) {
           ctx.beginPath();
-          ctx.arc(pulseX, pulseY, 10, 0, Math.PI * 2);
-          ctx.fillStyle = `${node.color}30`;
+          ctx.arc(pulseX, pulseY, 11, 0, Math.PI * 2);
+          ctx.fillStyle = `${dotColor}35`;
           ctx.fill();
         }
       });
 
+      ctx.restore();
       ctx.restore();
       frameId = requestAnimationFrame(renderCanvas);
     };
@@ -226,7 +240,7 @@ export default function InfiniteCanvasPortal() {
   // Recenter to (0,0)
   const recenter = useCallback(() => {
     setPan({ x: 0, y: 0 });
-    setZoom(0.85);
+    setZoom(0.9);
     bioSynthesizer.triggerSynapticImpulse();
   }, []);
 
@@ -248,7 +262,7 @@ export default function InfiniteCanvasPortal() {
       onMouseUp={handleMouseUp}
       onWheel={handleWheel}
     >
-      {/* 2D Background Canvas for Vector Grid & Extension Rays */}
+      {/* High-DPI Full-Screen Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />
 
       {/* Spatial World Container with CSS Matrix Transform */}
@@ -259,11 +273,11 @@ export default function InfiniteCanvasPortal() {
           transformOrigin: '0 0'
         }}
       >
-        {/* Origin (0,0) Central Architectural Hub */}
-        <CentralHubNode onExploreFirst={() => jumpTo(-technosomaticNodes[0].coords.x, -technosomaticNodes[0].coords.y)} />
+        {/* Origin (0,0) Central Logo Layer (50% opacity, pointer-events: none, <= 1/3 radial diameter) */}
+        <CentralHubNode />
 
-        {/* Interactive Color-Coded Rectangular Node Endpoint Buttons */}
-        {technosomaticNodes.map((node) => (
+        {/* 7 Color-Coded Rectangular Node Endpoint Buttons */}
+        {radialNodes.map((node) => (
           <ProjectNodeCard
             key={node.id}
             project={node}
@@ -278,26 +292,25 @@ export default function InfiniteCanvasPortal() {
       <header className="fixed top-5 left-5 right-5 z-40 flex items-center justify-between pointer-events-none">
         
         {/* Brand Chip */}
-        <div className="bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-[#111111] flex items-center gap-3 pointer-events-auto shadow-[0_8px_25px_rgba(0,0,0,0.06)]">
-          <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-heading font-black text-xs">
+        <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl border border-[#111111] flex items-center gap-3 pointer-events-auto shadow-[0_6px_20px_rgba(0,0,0,0.06)]">
+          <div className="w-7 h-7 rounded-lg bg-black text-white flex items-center justify-center font-heading font-black text-xs">
             RN
           </div>
           <div>
             <div className="font-heading font-bold text-xs text-black tracking-wider flex items-center gap-1.5">
-              ROOT NODE <span className="text-zinc-400 font-mono">//</span> TECHNOSOMATIC GRAPH
+              ROOT NODE <span className="text-zinc-400 font-mono">//</span> 7-RAY GRAPH
             </div>
-            <div className="text-[9px] font-mono text-zinc-500 font-semibold">360° SPATIAL VECTOR ENGINE</div>
           </div>
         </div>
 
         {/* Right HUD Controls */}
         <div className="flex items-center gap-2 pointer-events-auto">
           {/* Quick Node Selector Dropdown */}
-          <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#111111] flex items-center gap-2 text-xs font-mono shadow-[0_8px_25px_rgba(0,0,0,0.06)]">
+          <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#111111] flex items-center gap-2 text-xs font-mono shadow-[0_6px_20px_rgba(0,0,0,0.06)]">
             <span className="text-zinc-500 font-semibold hidden sm:inline text-[11px]">PORTAL:</span>
             <select
               onChange={(e) => {
-                const target = technosomaticNodes.find(p => p.id === e.target.value);
+                const target = radialNodes.find(p => p.id === e.target.value);
                 if (target) {
                   jumpTo(-target.coords.x, -target.coords.y);
                   setSelectedNode(target);
@@ -307,9 +320,9 @@ export default function InfiniteCanvasPortal() {
               }}
               className="bg-white text-black font-semibold border border-zinc-300 rounded px-2 py-1 text-xs cursor-pointer outline-none hover:border-black"
             >
-              <option value="">Jump & Open Modal...</option>
+              <option value="">Jump to Node...</option>
               <option value="origin">Origin [0, 0]</option>
-              {technosomaticNodes.map(p => (
+              {radialNodes.map(p => (
                 <option key={p.id} value={p.id}>{p.title}</option>
               ))}
             </select>
@@ -318,7 +331,7 @@ export default function InfiniteCanvasPortal() {
           {/* Sound Toggle */}
           <button
             onClick={toggleAudio}
-            className={`bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-[#111111] pointer-events-auto cursor-pointer transition-all shadow-[0_8px_25px_rgba(0,0,0,0.06)] flex items-center gap-2 ${
+            className={`bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#111111] pointer-events-auto cursor-pointer transition-all shadow-[0_6px_20px_rgba(0,0,0,0.06)] flex items-center gap-2 ${
               audioActive ? 'bg-black text-white' : 'text-zinc-700 hover:text-black'
             }`}
             title="Toggle 144Hz Harmonic Bio-Synthesizer"
@@ -363,7 +376,7 @@ export default function InfiniteCanvasPortal() {
       <SpatialMinimap
         pan={pan}
         zoom={zoom}
-        projects={technosomaticNodes}
+        projects={radialNodes}
         onJumpTo={jumpTo}
         onReset={recenter}
       />
@@ -372,11 +385,11 @@ export default function InfiniteCanvasPortal() {
       <EdgeIndicators
         pan={pan}
         zoom={zoom}
-        projects={technosomaticNodes}
+        projects={radialNodes}
         onJumpTo={jumpTo}
       />
 
-      {/* Non-Destructive Floating Modal Window System */}
+      {/* Non-Destructive Pop-Up Modal Window */}
       {selectedNode && (
         <NodeModalOverlay
           project={selectedNode}

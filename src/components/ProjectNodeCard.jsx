@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { bioSynthesizer } from '../audio/bioSynthesizer';
 
 export default function ProjectNodeCard({ project, onSelect, onHover, onHoverEnd }) {
   const [hovered, setHovered] = useState(false);
+  const nodeColor = project.dotColor || project.color;
 
   const handleMouseEnter = () => {
     setHovered(true);
@@ -31,46 +31,30 @@ export default function ProjectNodeCard({ project, onSelect, onHover, onHoverEnd
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      {/* Interactive Color-Coded Rectangular Button Displaying Only Project Title */}
+      {/* Interactive Color-Coded Rectangular Button */}
       <button
         type="button"
-        className={`group relative flex items-center gap-3 px-5 py-3 sm:px-6 sm:py-3.5 rounded-lg bg-white border text-zinc-950 transition-all duration-200 ease-out active:scale-95 ${
-          hovered 
-            ? 'scale-108 -translate-y-1 border-transparent shadow-[0_16px_40px_-5px_rgba(0,0,0,0.18)]' 
-            : 'border-[#111111] shadow-[0_6px_20px_rgba(0,0,0,0.06)]'
-        }`}
+        className="group relative flex items-center justify-center px-4 py-2 sm:px-5 sm:py-2.5 rounded-[6px] transition-all duration-200 ease-out active:scale-95 cursor-pointer"
         style={{
+          backgroundColor: hovered ? nodeColor : 'rgba(255, 255, 255, 0.95)',
+          border: `1.5px solid ${nodeColor}`,
+          color: hovered ? '#FFFFFF' : nodeColor,
+          transform: hovered ? 'scale(1.06) translateY(-2px)' : 'scale(1)',
           boxShadow: hovered 
-            ? `0 16px 36px -6px ${project.color}35, 0 0 0 2px ${project.color}` 
-            : undefined,
-          borderColor: hovered ? project.color : '#111111'
+            ? `0 12px 28px -4px ${nodeColor}45, 0 0 0 1px ${nodeColor}` 
+            : '0 4px 14px rgba(0,0,0,0.05)'
         }}
       >
-        {/* Left Color-Coded Accent Indicator */}
-        <span 
-          className="w-2.5 h-2.5 rounded-sm transition-transform duration-200 group-hover:scale-125 shrink-0"
-          style={{ 
-            backgroundColor: project.color,
-            boxShadow: hovered ? `0 0 10px ${project.color}` : 'none'
-          }}
-        />
-
-        {/* Project Title ONLY */}
-        <span className="font-heading font-bold text-xs sm:text-sm tracking-wide text-black group-hover:text-zinc-900 whitespace-nowrap">
+        {/* Project Title ONLY in Clean Uppercase Monospace/Heading Typography */}
+        <span className="font-heading font-bold text-xs sm:text-sm tracking-wider uppercase whitespace-nowrap">
           {project.title}
         </span>
 
-        {/* Hover Arrow Micro-interaction */}
-        <ArrowUpRight 
-          className="w-3.5 h-3.5 transition-all duration-200 text-zinc-400 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-0.5" 
-          style={{ color: hovered ? project.color : undefined }}
-        />
-
-        {/* Terminal Docking Ping on Hover */}
+        {/* Subtle Terminal Docking Ping Glow on Hover */}
         {hovered && (
           <span 
-            className="absolute -inset-1 rounded-xl pointer-events-none animate-ping opacity-25"
-            style={{ backgroundColor: project.color }}
+            className="absolute -inset-1 rounded-lg pointer-events-none animate-ping opacity-25"
+            style={{ backgroundColor: nodeColor }}
           />
         )}
       </button>
